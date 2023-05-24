@@ -5,34 +5,74 @@
 </head>
 <body>
   <script>
+    // Sucess callback function from watchPosition call
     function successCallback(position) {
       const latitude = position.coords.latitude;
       const longitude = position.coords.longitude;
 
-      console.log("Latitude:", latitude);
+      console.log("Latitude:", latitude,);
       console.log("Longitude:", longitude);
-
-      var latmessage = document.getElementById("latInfo");
-      var longmessage = document.getElementById("longInfo");
-  
-      latmessage.textContent = latitude;
-      longmessage.textContent = longitude;
+      console.log("this ewereis called")
     }
 
+    // Error Function
     function errorCallback(error) {
       console.log("Error:", error.message);
     }
+    function error(err) {
+      console.error(`ERROR(${err.code}): ${err.message}`);
+    }
+
+    // start code
+    // Boat end
+    var latmessageB = document.getElementById("latInfoB");
+    var longmessageB = document.getElementById("longInfoB");
+
+    // Pin end
+    var latmessageP = document.getElementById("latInfoP");
+    var longmessageP = document.getElementById("longInfoP");
+
+    let watchId;
+
+    options = {
+      enableHighAccuracy: false,
+    };
+
 
     if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+      navigator.geolocation.getCurrentPosition(successCallback, errorCallback); // Change this to watch.....
     } else {
       console.log("Geolocation is not supported by your browser");
     }
 
+    //onclick functions:
+    function buttonClickStart() {
+      //watchId = navigator.geolocation.watchPosition(
+      //position => console.log(position)
+      watchId = navigator.geolocation.watchPosition(successCallback, error, options);
+    }
+
+    function buttonClickStop() {
+      // Cancel the updates when the user clicks a button.
+      navigator.geolocation.clearWatch(watchId);
+    }
+
 
   </script>
-  <p id="latInfo"></p>
-  <p id="longInfo"></p>
+  <p>Below is the Boat end Mark</p>
+  <p id="latInfoB"></p>
+  <p id="longInfoB"></p>
+  <p>Below is the Pin end Mark</p>
+  <p id="latInfoP"></p>
+  <p id="longInfoP"></p>
+
+  <button onclick="BoatPing()">
+    Boat End
+  </button>
+
+  <button onclick="PinPing()">
+    Pin End
+  </button> 
 
 </body>
 </html>
