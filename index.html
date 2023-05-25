@@ -4,6 +4,36 @@
   <title>Location App</title>
 </head>
 <body>
+  <h1>Start Line Calculator</h1>
+  <!-- Boat End -->
+  <p>Below is the Boat end Mark</p>
+  <p id="latInfoB"></p>
+  <p id="longInfoB"></p>
+  <button onclick="BoatPing()">
+    Boat End
+  </button>
+  <p id="BoatStatus"></p>
+
+  <!-- Pin End -->
+  <p>Below is the Pin end Mark</p>
+  <p id="latInfoP"></p>
+  <p id="longInfoP"></p>
+  <button onclick="PinPing()">
+    Pin End
+  </button> 
+  <p id="PinStatus"></p>
+
+  <p>Below is the Bearing and the angle</p>
+  <p id="bearing"></p>
+  <p id="distance"></p>
+  <button onclick="PrintInfo()">
+    Print Information
+  </button> 
+
+
+
+  <script src="DistanceScript.js"></script>
+  <script src="BearingScript.js"></script>
   <script>
     // Sucess callback function from watchPosition call
     function successCallback(position) {
@@ -15,6 +45,22 @@
       console.log("this ewereis called")
     }
 
+    // Callback to set the Boat
+    function successBoat(position){
+      boatLat = position.coords.latitude;
+      boatLong = position.coords.longitude;
+      latmessageB.textContent = boatLat;
+      longmessageB.textContent = boatLong;
+    }
+
+    // Callback to set the Pin
+    function successPin(position){
+      pinLat = position.coords.latitude;
+      pinLong = position.coords.longitude;
+      latmessageP.textContent = pinLat
+      longmessageP.textContent = pinLong
+    }
+
     // Error Function
     function errorCallback(error) {
       console.log("Error:", error.message);
@@ -24,6 +70,22 @@
     }
 
     // start code
+    // Variables
+    let watchId;
+    let boatStatus = "unset";
+    let pinStatus = "unset";
+
+    let defaultLat = "Latitude: NULL"
+    let defaultLong = "Longitude: NULL"
+
+    let defaultBearing = "Bearing: NULL"
+    let defaultDistance = "Distance: NULL"
+
+    let pinLat;
+    let pinLong;
+    let boatLat;
+    let boatLong;
+
     // Boat end
     var latmessageB = document.getElementById("latInfoB");
     var longmessageB = document.getElementById("longInfoB");
@@ -32,7 +94,25 @@
     var latmessageP = document.getElementById("latInfoP");
     var longmessageP = document.getElementById("longInfoP");
 
-    let watchId;
+    // Pinged Status
+    var boatMessage = document.getElementById("BoatStatus");
+    var pinMessage = document.getElementById("PinStatus");
+
+    // Calculated Values
+    var bearingMessage = document.getElementById("bearing");
+    var distanceMessage = document.getElementById("distance");
+
+    // Set Defaults
+    boatMessage.textContent = boatStatus;
+    pinMessage.textContent = pinStatus;
+
+    latmessageB.textContent = defaultLat;
+    longmessageB.textContent = defaultLong;
+    latmessageP.textContent = defaultLat;
+    longmessageP.textContent = defaultLong;
+
+    bearingMessage.textContent =  defaultBearing;
+    distanceMessage.textContent = defaultDistance;
 
     options = {
       enableHighAccuracy: false,
@@ -45,34 +125,25 @@
       console.log("Geolocation is not supported by your browser");
     }
 
-    //onclick functions:
-    function buttonClickStart() {
-      //watchId = navigator.geolocation.watchPosition(
-      //position => console.log(position)
-      watchId = navigator.geolocation.watchPosition(successCallback, error, options);
+    function PrintInfo(){
+      const bearing = calculateBearing(pinLat, pinLong, boatLat, boatLong);
+      let bearingStatus = 'Bearing: ' + bearing.toFixed(2) + ' degrees'
+      bearingMessage.textContent = bearingStatus;
+
+      const distance = calculateDistance(pinLat, pinLong, boatLat, boatLong);
+      let distanceStatus = 'Distance: '+ distance.toFixed(2) + ' feet';
+      distanceMessage.textContent = distanceStatus;
     }
 
-    function buttonClickStop() {
-      // Cancel the updates when the user clicks a button.
-      navigator.geolocation.clearWatch(watchId);
+    function BoatPing(){
+      boatMessage.textContent = "set";
+      navigator.geolocation.getCurrentPosition(successBoat, errorCallback, options);
     }
 
-
+    function PinPing(){
+      pinMessage.textContent = "set";
+      navigator.geolocation.getCurrentPosition(successPin, errorCallback, options);
+    }
   </script>
-  <p>Below is the Boat end Mark</p>
-  <p id="latInfoB"></p>
-  <p id="longInfoB"></p>
-  <p>Below is the Pin end Mark</p>
-  <p id="latInfoP"></p>
-  <p id="longInfoP"></p>
-
-  <button onclick="BoatPing()">
-    Boat End
-  </button>
-
-  <button onclick="PinPing()">
-    Pin End
-  </button> 
-
 </body>
 </html>
